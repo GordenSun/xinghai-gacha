@@ -59,35 +59,28 @@
     CHARACTERS.forEach(c => {
       const cell = document.createElement('div');
       cell.className = `cell q-${c.rarity}`;
-      if (!c.implemented) {
-        cell.classList.add('locked');
-        cell.innerHTML = `<span class="cell-id">${pad2(c.id)}</span>
-          <div class="lock"><span class="qm">?</span><span class="soon">COMING SOON</span></div>`;
-      } else {
-        const owned = isOwned(c.id);
-        if (owned) cell.classList.add('owned');
-        const img = document.createElement('img');
-        img.className = 'cell-img';
-        img.alt = owned ? c.name : '';
-        applyChroma(img, charImg(c));
-        cell.appendChild(img);
-        cell.insertAdjacentHTML('beforeend',
-          `<span class="cell-id">${pad2(c.id)}</span>
-           <span class="qtag">${owned ? c.rarity : '?'}</span>
-           <span class="cell-name">${owned ? c.name : ''}</span>`);
-        cell.addEventListener('click', () => openDetail(c));
-      }
+      const owned = c.implemented && isOwned(c.id);
+      if (owned) cell.classList.add('owned');
+      if (!c.implemented) cell.classList.add('locked');
+      const img = document.createElement('img');
+      img.className = 'cell-img';
+      img.alt = owned ? c.name : '';
+      if (c.implemented) applyChroma(img, charImg(c));
+      cell.appendChild(img);
+      cell.insertAdjacentHTML('beforeend',
+        `<span class="cell-name">${owned ? c.name : ''}</span>`);
+      if (c.implemented) cell.addEventListener('click', () => openDetail(c));
       wall.appendChild(cell);
     });
   }
 
   /* ============ 图鉴 ============ */
-  let filterCat = 'all', filterOwn = 'all';
+  let filterRarity = 'all', filterOwn = 'all';
   function renderGallery() {
     const grid = $('#galleryGrid');
     grid.innerHTML = '';
     CHARACTERS.filter(c => {
-      if (filterCat !== 'all' && c.category !== filterCat) return false;
+      if (filterRarity !== 'all' && c.rarity !== filterRarity) return false;
       if (filterOwn === 'owned' && !isOwned(c.id)) return false;
       if (filterOwn === 'locked' && isOwned(c.id)) return false;
       return true;
@@ -118,9 +111,7 @@
     applyChroma(img, charImg(c));
     card.appendChild(img);
     card.insertAdjacentHTML('beforeend',
-      `<div class="card-frame"></div>
-       <span class="card-cat">${CATEGORIES[c.category].icon} ${c.category}</span>
-       <span class="card-q">${c.rarity}</span>
+      `<div class="card-frame"></div>       <span class="card-q">${c.rarity}</span>
        <div class="card-info">
          <div class="card-stars">${stars(c.rarity)}</div>
          <div class="card-name">${owned ? c.name : '？？？'}</div>
@@ -139,7 +130,7 @@
       panel.innerHTML = `<button class="detail-close" data-close="detail">✕</button>
         <div class="d-locked"><div style="font-size:48px">?</div>
         <h3 style="margin:10px 0">敬请期待</h3>
-        <p>${c.title} · ${c.category} · ${c.rarity}</p>
+        <p>${c.title} · ${c.rarity}</p>
         <p style="margin-top:10px;font-size:13px">这位少女的立绘正在绘制中……</p></div>`;
       showOverlay('detail'); return;
     }
@@ -161,7 +152,6 @@
         <div class="d-name">${c.name}</div>
         <div class="d-title">「${c.title}」</div>
         <div class="d-tags">
-          <span class="d-tag">${CATEGORIES[c.category].icon} ${c.category}</span>
           <span class="d-tag">气质 · ${c.vibe}</span>
           <span class="d-tag">元素 · ${c.element}</span>
         </div>
@@ -173,8 +163,8 @@
       ` : `
         <div><span class="d-q">${c.rarity}</span><span class="d-stars">${stars(c.rarity)}</span></div>
         <div class="d-name">？？？</div>
-        <div class="d-title">「${c.title}」· ${c.category}</div>
-        <div class="d-tags"><span class="d-tag">${CATEGORIES[c.category].icon} ${c.category}</span><span class="d-tag">尚未获得</span></div>
+        <div class="d-title">「${c.title}」</div>
+        <div class="d-tags"><span class="d-tag">尚未获得</span></div>
         <div class="d-bio"><div class="d-bio-label">尚 未 邂 逅</div>她仍隐没在星海之中。抽取召唤，点亮她的剪影，便能读到属于她的故事。</div>
       `;
 
@@ -203,9 +193,7 @@
     applyChroma(img, charImg(c));
     host.appendChild(bg); host.appendChild(img);
     host.insertAdjacentHTML('beforeend',
-      `<div class="card-frame"></div>
-       <span class="card-cat">${CATEGORIES[c.category].icon} ${c.category}</span>
-       <span class="card-q">${c.rarity}</span>
+      `<div class="card-frame"></div>       <span class="card-q">${c.rarity}</span>
        <div class="card-info"><div class="card-stars">${stars(c.rarity)}</div>
        <div class="card-name">${c.name}</div><div class="card-title">${c.title}</div></div>`);
   }
@@ -216,7 +204,7 @@
        <div class="single-info q-${c.rarity}">
          <div class="si-stars">${stars(c.rarity)}</div>
          <div class="si-name">${c.name}${isNew ? ' <small style="color:var(--gold)">NEW</small>' : ''}</div>
-         <div class="si-title">「${c.title}」· ${c.category}</div>
+         <div class="si-title">「${c.title}」</div>
          <div class="si-tip">点击查看小传 · 或点击空白继续</div>
        </div>`;
     fillFrontCard($('#frontCard'), c);
@@ -311,10 +299,10 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }));
 
-    $('#filterCategory').addEventListener('click', e => {
+    $('#filterRarity').addEventListener('click', e => {
       const b = e.target.closest('.chip'); if (!b) return;
-      $$('#filterCategory .chip').forEach(x => x.classList.remove('active'));
-      b.classList.add('active'); filterCat = b.dataset.cat; renderGallery();
+      $$('#filterRarity .chip').forEach(x => x.classList.remove('active'));
+      b.classList.add('active'); filterRarity = b.dataset.rar; renderGallery();
     });
     $('#filterOwn').addEventListener('click', e => {
       const b = e.target.closest('.chip'); if (!b) return;
