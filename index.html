@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0a1a" />
+  <title>星海绮谭 · 二次元抽卡</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- 顶部栏 -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">✦</span>
+      <span class="brand-name">星海绮谭</span>
+    </div>
+    <nav class="tabs">
+      <button class="tab active" data-view="home">抽卡</button>
+      <button class="tab" data-view="gallery">图鉴</button>
+    </nav>
+    <div class="collect">
+      <span class="collect-num"><span id="ownedCount">0</span>/<span id="totalCount">60</span></span>
+      <span class="collect-label">已点亮</span>
+    </div>
+  </header>
+
+  <!-- ============ 首页：抽卡 ============ -->
+  <main id="view-home" class="view active">
+    <section class="hero">
+      <div class="hero-glow"></div>
+      <h1 class="hero-title">命运的星轨已为你展开</h1>
+      <p class="hero-sub">在星海尽头，<b>60</b> 位少女正等待与你相遇</p>
+
+      <div class="gacha-actions">
+        <button id="btnPull1" class="pull-btn pull-1">
+          <span class="pull-main">抽一次</span>
+          <span class="pull-sub">单次召唤</span>
+        </button>
+        <button id="btnPull10" class="pull-btn pull-10">
+          <span class="pull-badge">十连保底 SR↑</span>
+          <span class="pull-main">抽十次</span>
+          <span class="pull-sub">十连召唤</span>
+        </button>
+      </div>
+      <p class="rates">概率：SSR 5% · SR 25% · R 70%</p>
+    </section>
+
+    <section class="wall">
+      <div class="wall-head">
+        <h2>角色星座 · 剪影墙</h2>
+        <p>每点亮一颗星，就解锁一段故事</p>
+      </div>
+      <div id="silhouetteWall" class="silhouette-wall"></div>
+    </section>
+  </main>
+
+  <!-- ============ 图鉴 ============ -->
+  <main id="view-gallery" class="view">
+    <div class="filters">
+      <div class="filter-row" id="filterCategory">
+        <button class="chip active" data-cat="all">全部类型</button>
+        <button class="chip" data-cat="机甲">⚙️ 机甲</button>
+        <button class="chip" data-cat="校园">🌸 校园</button>
+        <button class="chip" data-cat="魔法">✦ 魔法</button>
+        <button class="chip" data-cat="冒险">⚔️ 冒险</button>
+      </div>
+      <div class="filter-row" id="filterOwn">
+        <button class="chip mini active" data-own="all">全部</button>
+        <button class="chip mini" data-own="owned">已获得</button>
+        <button class="chip mini" data-own="locked">未获得</button>
+      </div>
+    </div>
+    <div id="galleryGrid" class="gallery-grid"></div>
+  </main>
+
+  <!-- ============ 抽卡动画层 ============ -->
+  <div id="gachaOverlay" class="overlay gacha-overlay">
+    <div class="overlay-bg"></div>
+    <button id="skipBtn" class="skip-btn">点击跳过 ▸</button>
+    <div id="gachaStage" class="gacha-stage"></div>
+    <div id="resultSummary" class="result-summary"></div>
+  </div>
+
+  <!-- ============ 角色详情层 ============ -->
+  <div id="detailOverlay" class="overlay detail-overlay">
+    <div class="overlay-bg" data-close="detail"></div>
+    <div class="detail-panel" id="detailPanel"></div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/chroma.js"></script>
+  <script src="js/gacha.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
