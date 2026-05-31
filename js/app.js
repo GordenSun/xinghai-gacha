@@ -181,7 +181,6 @@
         <div class="d-name">${c.name}</div>
         <div class="d-title">「${c.title}」</div>
         <div class="d-tags">
-          <span class="d-tag">气质 · ${c.vibe}</span>
           <span class="d-tag">元素 · ${c.element}</span>
         </div>
         <div class="d-stats">
