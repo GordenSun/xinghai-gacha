@@ -52,26 +52,55 @@
     $('#totalCount').textContent = CHARACTERS.length;
   }
 
-  /* ============ 剪影墙 ============ */
+  /* ============ 剪影墙 · 大合影 ============ */
+  // 分排：后排人多、个小、靠上；前排人少、个大、靠下，前排遮挡后排，营造纵深合影
+  const WALL_ROWS = [
+    { count: 12, scale: 0.74 },
+    { count: 11, scale: 0.80 },
+    { count: 10, scale: 0.86 },
+    { count: 10, scale: 0.92 },
+    { count: 9,  scale: 0.96 },
+    { count: 8,  scale: 1.00 },
+  ];
+  function buildWallCell(c) {
+    const cell = document.createElement('div');
+    cell.className = `cell q-${c.rarity}`;
+    const owned = c.implemented && isOwned(c.id);
+    if (owned) cell.classList.add('owned');
+    if (!c.implemented) cell.classList.add('locked');
+    const img = document.createElement('img');
+    img.className = 'cell-img';
+    img.alt = owned ? c.name : '';
+    if (c.implemented) applyChroma(img, charImg(c));
+    cell.appendChild(img);
+    cell.insertAdjacentHTML('beforeend',
+      `<span class="cell-name">${owned ? c.name : ''}</span>`);
+    if (c.implemented) cell.addEventListener('click', () => openDetail(c));
+    return cell;
+  }
   function renderWall() {
     const wall = $('#silhouetteWall');
     wall.innerHTML = '';
-    CHARACTERS.forEach(c => {
-      const cell = document.createElement('div');
-      cell.className = `cell q-${c.rarity}`;
-      const owned = c.implemented && isOwned(c.id);
-      if (owned) cell.classList.add('owned');
-      if (!c.implemented) cell.classList.add('locked');
-      const img = document.createElement('img');
-      img.className = 'cell-img';
-      img.alt = owned ? c.name : '';
-      if (c.implemented) applyChroma(img, charImg(c));
-      cell.appendChild(img);
-      cell.insertAdjacentHTML('beforeend',
-        `<span class="cell-name">${owned ? c.name : ''}</span>`);
-      if (c.implemented) cell.addEventListener('click', () => openDetail(c));
-      wall.appendChild(cell);
+    let i = 0;
+    const makeRow = (scale) => {
+      const row = document.createElement('div');
+      row.className = 'wall-row';
+      row.style.setProperty('--row-scale', scale);
+      return row;
+    };
+    WALL_ROWS.forEach(def => {
+      if (i >= CHARACTERS.length) return;
+      const row = makeRow(def.scale);
+      const end = Math.min(i + def.count, CHARACTERS.length);
+      for (; i < end; i++) row.appendChild(buildWallCell(CHARACTERS[i]));
+      wall.appendChild(row);
     });
+    // 角色多于预设分排时，余下的并入最前排
+    if (i < CHARACTERS.length) {
+      const row = makeRow(1);
+      for (; i < CHARACTERS.length; i++) row.appendChild(buildWallCell(CHARACTERS[i]));
+      wall.appendChild(row);
+    }
   }
 
   /* ============ 图鉴 ============ */
@@ -246,11 +275,9 @@
       mini.insertAdjacentHTML('beforeend',
         `<div class="card-frame"></div><span class="card-q" style="font-size:9px;padding:1px 5px">${c.rarity}</span>
          <div class="card-info" style="padding:16px 4px 4px"><div class="card-name" style="font-size:11px">${c.name}</div></div>`);
-      mini.classList.add('mini-pop');
-      mini.style.animationDelay = (i * 90) + 'ms';
+      mini.style.animationDelay = (i * 55) + 'ms';
       mini.addEventListener('click', e => { e.stopPropagation(); closeOverlay('gacha'); openDetail(c); });
       grid.appendChild(mini);
-      await delay(70);
     }
     $('#closeSummary').addEventListener('click', e => { e.stopPropagation(); closeOverlay('gacha'); });
     $('#againBtn').addEventListener('click', e => { e.stopPropagation(); doPull(10); });

@@ -126,28 +126,36 @@ body::before {
 
 .silhouette-wall {
   position: relative;
+  --base-h: clamp(76px, 19vw, 150px);
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 6px 0;
-  padding: 34px 14px 18px;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 14px 22px;
   border-radius: 20px;
   border: 1px solid var(--line);
   overflow: hidden;
   background:
-    radial-gradient(140% 72% at 50% 104%, rgba(123,92,255,.22), transparent 72%),
-    linear-gradient(180deg, rgba(22,16,48,.55), rgba(8,6,18,.8));
+    radial-gradient(150% 80% at 50% 108%, rgba(123,92,255,.24), transparent 72%),
+    linear-gradient(180deg, rgba(22,16,48,.55), rgba(8,6,18,.82));
 }
 .silhouette-wall::after {
-  content: ""; position: absolute; left: 5%; right: 5%; bottom: 16px; height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(176,107,255,.55), transparent);
+  content: ""; position: absolute; left: 4%; right: 4%; bottom: 14px; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(176,107,255,.5), transparent);
   filter: blur(.5px); pointer-events: none;
 }
+/* 一排合影；后排在前排之后（DOM 顺序在前→被后续前排盖住） */
+.wall-row {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  width: 100%;
+}
+.wall-row + .wall-row { margin-top: calc(var(--base-h) * var(--row-scale, 1) * -0.5); }
 .cell {
   position: relative;
-  height: clamp(80px, 19vw, 156px);
-  margin: 0 -6px;
+  height: calc(var(--base-h) * var(--row-scale, 1));
+  margin: 0 calc(var(--base-h) * var(--row-scale, 1) * -0.06);
   display: flex;
   align-items: flex-end;
   cursor: pointer;
@@ -160,19 +168,18 @@ body::before {
   opacity: .5;
   transition: filter .8s ease, opacity .8s ease;
 }
-.cell.owned { z-index: 3; }
-.cell.owned .cell-img { filter: drop-shadow(0 6px 12px rgba(0,0,0,.55)); opacity: 1; }
-.cell.owned.q-R   .cell-img { filter: drop-shadow(0 0 10px var(--q-R-glow)); }
-.cell.owned.q-SR  .cell-img { filter: drop-shadow(0 0 13px var(--q-SR-glow)); }
-.cell.owned.q-SSR .cell-img { filter: drop-shadow(0 0 17px var(--q-SSR-glow)); }
-.cell:hover { transform: translateY(-12px); z-index: 20; }
-.cell.locked { opacity: .8; }
+.cell.owned .cell-img { filter: drop-shadow(0 5px 10px rgba(0,0,0,.55)); opacity: 1; }
+.cell.owned.q-R   .cell-img { filter: drop-shadow(0 0 9px var(--q-R-glow)); }
+.cell.owned.q-SR  .cell-img { filter: drop-shadow(0 0 12px var(--q-SR-glow)); }
+.cell.owned.q-SSR .cell-img { filter: drop-shadow(0 0 16px var(--q-SSR-glow)); }
+.cell:hover { transform: translateY(-10px); z-index: 50; }
+.cell.locked { opacity: .82; }
 .cell .cell-name {
-  position: absolute; left: 50%; bottom: calc(100% - 8px); transform: translateX(-50%);
+  position: absolute; left: 50%; bottom: calc(100% - 10px); transform: translateX(-50%);
   white-space: nowrap; font-size: 11px; font-weight: 700; color: #fff;
-  background: rgba(8,6,20,.88); border: 1px solid var(--line);
+  background: rgba(8,6,20,.9); border: 1px solid var(--line);
   padding: 3px 9px; border-radius: 8px; opacity: 0; pointer-events: none;
-  transition: opacity .25s; z-index: 30;
+  transition: opacity .25s; z-index: 60;
 }
 .cell:hover .cell-name { opacity: 1; }
 
@@ -272,7 +279,7 @@ body::before {
 
 .mini-card { position: relative; border-radius: 10px; overflow: hidden; }
 .mini-card.new::after { content: "NEW"; position: absolute; top: 4px; left: 4px; font-size: 9px; font-weight: 800; background: var(--gold); color: #4a2d00; padding: 1px 5px; border-radius: 6px; z-index:2; }
-.mini-pop { animation: pop .4s ease; }
+.mini-pop { animation: pop .45s ease both; }
 
 /* 单抽信息条 */
 .single-info { position: absolute; left: 0; right: 0; bottom: calc(8% + var(--safe-bottom)); z-index: 4; text-align: center; opacity: 0; }
@@ -351,8 +358,7 @@ body::before {
   .pull-btn { max-width: 320px; min-width: 210px; padding: 24px 20px 20px; border-radius: 22px; }
   .pull-main { font-size: 26px; }
   .pull-sub { font-size: 14px; }
-  .silhouette-wall { row-gap: 8px; padding: 36px 22px 24px; }
-  .cell { height: clamp(140px, 14vw, 182px); }
+  .silhouette-wall { --base-h: clamp(118px, 12.5vw, 165px); padding: 40px 24px 30px; }
 }
 
 /* 减少动画偏好 */
