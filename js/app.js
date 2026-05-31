@@ -266,7 +266,7 @@
     for (let i = 0; i < results.length; i++) {
       const c = results[i];
       const mini = document.createElement('div');
-      mini.className = `mini-card card q-${c.rarity}` + (results._new[i] ? ' new' : '');
+      mini.className = `mini-card card q-${c.rarity} mini-pop` + (results._new[i] ? ' new' : '');
       const bg = document.createElement('div'); bg.className = 'card-bg';
       setBg(bg, cardBg(c.rarity), `fallback-${c.rarity}`);
       const img = document.createElement('img'); img.className = 'card-char';
