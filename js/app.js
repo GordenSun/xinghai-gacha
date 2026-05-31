@@ -11,9 +11,9 @@
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const pad2 = n => String(n).padStart(2, '0');
   const delay = ms => new Promise(r => setTimeout(r, ms));
-  const charImg = c => `assets/characters/c${pad2(c.id)}.png`;
-  const cardBg = r => `assets/cards/bg_${r}.png`;
-  const cardBack = 'assets/card-back.png';
+  const charImg = c => `assets/characters/c${pad2(c.id)}.webp`;
+  const cardBg = r => `assets/cards/bg_${r}.webp`;
+  const cardBack = 'assets/card-back.webp';
   const stars = r => '★'.repeat(RARITY[r].stars);
 
   /* ---------- 状态 ---------- */
@@ -34,10 +34,12 @@
     return isNew;
   }
 
-  /* ---------- 图片处理：绿幕抠图 + 卡背景兜底 ---------- */
+  /* ---------- 图片加载：立绘已离线抠图为透明 WebP，直接加载（不再运行时抠图） ---------- */
   function applyChroma(imgEl, src) {
-    ChromaKey.process(src).then(url => { imgEl.src = url; })
-      .catch(() => { imgEl.style.display = 'none'; });
+    imgEl.loading = 'lazy';
+    imgEl.decoding = 'async';
+    imgEl.onerror = () => { imgEl.style.display = 'none'; };
+    imgEl.src = src;
   }
   function setBg(el, url, fallbackClass) {
     el.classList.add(fallbackClass);
